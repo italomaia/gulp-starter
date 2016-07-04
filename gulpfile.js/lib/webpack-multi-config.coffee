@@ -2,20 +2,20 @@ config = require '../config'
 if !config.tasks.js
   return
 
-path            = require('path')
-pathToUrl       = require('./pathToUrl')
-webpack         = require('webpack')
-webpackManifest = require('./webpackManifest')
+path            = require 'path'
+pathToUrl       = require './pathToUrl'
+webpack         = require 'webpack'
+webpackManifest = require './webpackManifest'
 
 module.exports = (env) ->
-  jsSrc = path.resolve config.root.src, config.tasks.js.src
-  jsDest = path.resolve config.root.dest, config.tasks.js.dest
+  jsSrc   = path.resolve config.root.src, config.tasks.js.src
+  jsDest  = path.resolve config.root.dest, config.tasks.js.dest
   publicPath = pathToUrl config.tasks.js.dest, '/'
 
-  extensions = config.tasks.js.extensions.map (extension) ->
-    return ".#{extension}"
+  extensions = config.tasks.js.extensions.map \
+    (extension) -> ".#{extension}"
 
-  rev = config.tasks.production.rev && env == 'production'
+  rev = config.tasks.production.rev and env == 'production'
   filenamePattern = if rev? then '[name]-[hash].js' else '[name].js'
 
   webpackConfig =
@@ -26,10 +26,10 @@ module.exports = (env) ->
       extensions: [''].concat(extensions)
     module:
       loaders: [
-          {test: /\.js$/}
-          {loader: 'babel-loader'}
-          {exclude: /node_modules/}
-          {query: config.tasks.js.babel}
+          test: /\.js$/
+          loader: 'babel-loader'
+          exclude: /node_modules/
+          query: config.tasks.js.babel
       ]
 
   if env == 'development'
@@ -41,7 +41,8 @@ module.exports = (env) ->
       txt = 'webpack-hot-middleware/client?&reload=true'
       config.tasks.js.entries[key] = [txt].concat(entry)
 
-    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin())
+    webpackConfig.plugins.push \
+      new webpack.HotModuleReplacementPlugin()
 
   if env != 'test'
     # Karma doesn't need entry points or output settings
@@ -62,7 +63,9 @@ module.exports = (env) ->
   if env == 'production'
     if rev
       webpackConfig.plugins.push \
-        new webpackManifest(publicPath, config.root.dest)
+        new webpackManifest \
+          publicPath,
+          config.root.dest
 
     webpackConfig.plugins.push \
       new webpack.DefinePlugin \
