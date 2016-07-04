@@ -4,7 +4,8 @@ config = require '../config'
 
 cleanTask = (cb) ->
   del [config.root.dest]
-    .then (paths) -> cb()
+    .then (paths) -> cb(); return
+  return
 
 
 gulp.task 'clean', cleanTask
